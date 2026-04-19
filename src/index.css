@@ -1,0 +1,50 @@
+:root {
+  --bg: #0a0a0c;
+  --panel: rgba(255, 255, 255, 0.04);
+  --panel-strong: rgba(255, 255, 255, 0.06);
+  --border: rgba(255, 255, 255, 0.12);
+  --text: rgba(255, 255, 255, 0.92);
+  --muted: rgba(255, 255, 255, 0.62);
+  --danger: #ffffff;
+  --danger-bg: rgba(255, 255, 255, 0.08);
+  --now: rgba(72, 255, 160, 1);
+  --shadow: rgba(0, 0, 0, 0.45) 0 18px 40px -18px;
+
+  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
+  --mono: ui-monospace, Consolas, monospace;
+
+  font: 16px/150% var(--sans);
+  letter-spacing: 0.2px;
+  color-scheme: dark;
+  color: var(--text);
+  background: var(--bg);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background:
+    radial-gradient(900px 600px at 15% -10%, rgba(255, 255, 255, 0.08), transparent 60%),
+    radial-gradient(700px 500px at 90% 10%, rgba(255, 255, 255, 0.06), transparent 55%),
+    var(--bg);
+}
+
+#root {
+  min-height: 100svh;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+a {
+  color: inherit;
+}

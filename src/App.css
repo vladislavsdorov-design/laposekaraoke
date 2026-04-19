@@ -1,0 +1,366 @@
+.page {
+  width: min(1100px, 100%);
+  margin: 0 auto;
+  padding: 18px 16px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 14px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--panel);
+  box-shadow: var(--shadow);
+}
+
+.topbarRight {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.brand {
+  display: grid;
+  gap: 2px;
+  text-align: left;
+}
+
+.brandMark {
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+}
+
+.brandSub {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.brandBlock {
+  display: grid;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+.gridAdmin {
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 920px) {
+  .grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .gridAdmin {
+    grid-template-columns: 1.2fr 0.8fr;
+  }
+}
+
+.card {
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--panel);
+  padding: 16px;
+  box-shadow: var(--shadow);
+}
+
+.cardTitle {
+  font-size: 14px;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 12px;
+}
+
+.form {
+  display: grid;
+  gap: 10px;
+  text-align: left;
+}
+
+.label {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.input {
+  border: 1px solid var(--border);
+  background: rgba(0, 0, 0, 0.35);
+  color: var(--text);
+  border-radius: 12px;
+  padding: 12px 12px;
+  outline: none;
+}
+
+.input:focus {
+  border-color: rgba(255, 255, 255, 0.26);
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.btn {
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text);
+  border-radius: 12px;
+  padding: 12px 12px;
+  cursor: pointer;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.btnGhost {
+  background: transparent;
+  border-color: var(--border);
+}
+
+.btnDanger {
+  border-color: rgba(255, 255, 255, 0.22);
+  background: var(--danger-bg);
+}
+
+.btnSmall {
+  padding: 8px 10px;
+  font-size: 13px;
+}
+
+.btnActive {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.link {
+  text-decoration: none;
+  padding: 10px 10px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  color: var(--muted);
+}
+
+.link:hover {
+  border-color: var(--border);
+  color: var(--text);
+}
+
+.hint {
+  color: var(--muted);
+  font-size: 13px;
+  margin-top: 8px;
+}
+
+.error {
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.06);
+  padding: 10px 12px;
+  border-radius: 12px;
+  color: var(--text);
+  font-size: 13px;
+}
+
+.mono {
+  font-family: var(--mono);
+  font-size: 14px;
+}
+
+.status {
+  display: grid;
+  gap: 10px;
+  text-align: left;
+}
+
+.statusTitle {
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+.statusBig {
+  font-size: 38px;
+  line-height: 1;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+.statusText {
+  color: var(--muted);
+}
+
+.actions {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.toolbar {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.modeRow {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 8px;
+  margin: 10px 0;
+}
+
+.statChip {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 8px 10px;
+  font-size: 13px;
+  color: var(--muted);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.queue,
+.queueMini {
+  display: grid;
+  gap: 10px;
+}
+
+.queueRow {
+  display: grid;
+  grid-template-columns: 40px 1fr;
+  gap: 10px;
+  align-items: center;
+  padding: 12px 12px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: rgba(0, 0, 0, 0.22);
+  text-align: left;
+}
+
+button.queueRow {
+  width: 100%;
+  color: inherit;
+}
+
+.queueRow:hover {
+  background: rgba(0, 0, 0, 0.32);
+}
+
+.queueRowSelected {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.queueRowNow {
+  border-color: rgba(72, 255, 160, 0.6);
+  box-shadow: 0 0 0 1px rgba(72, 255, 160, 0.25);
+}
+
+.queueRowMe {
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.queueNum {
+  font-family: var(--mono);
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.queueMain {
+  display: grid;
+  gap: 2px;
+}
+
+.queueName {
+  font-weight: 700;
+}
+
+.queueTrack {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.queueMeta {
+  color: var(--muted);
+  font-size: 12px;
+  letter-spacing: 0.3px;
+}
+
+.nowCard {
+  border: 1px solid rgba(72, 255, 160, 0.6);
+  background: rgba(72, 255, 160, 0.1);
+  border-radius: 16px;
+  padding: 14px;
+}
+
+.nowTitle {
+  font-size: 12px;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: rgba(72, 255, 160, 0.95);
+  margin-bottom: 6px;
+}
+
+.nowLine {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.announceBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.clock {
+  font-family: var(--mono);
+  color: var(--muted);
+}
+
+.nextCard {
+  margin-top: 10px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.nextTitle {
+  color: var(--muted);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+}
+
+.announceHelper {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--border);
+  display: grid;
+  gap: 6px;
+}
+
+.linkInline {
+  margin-left: 6px;
+  color: var(--text);
+}
