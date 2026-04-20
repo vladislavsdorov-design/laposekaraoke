@@ -1,3 +1,8 @@
+@import url("https://fonts.googleapis.com/css2?family=Archivo+Black&family=Bebas+Neue&family=Cinzel:wght@400..900&family=Gravitas+One&family=Merriweather+Sans:ital,wght@0,300..800;1,300..800&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Orbitron:wght@400..900&family=Righteous&family=Rubik+Mono+One&family=Special+Gothic+Expanded+One&family=Stalinist+One&display=swap");
+* {
+  margin: 0;
+  padding: 0;
+}
 .page {
   width: min(1100px, 100%);
   margin: 0 auto;
@@ -174,6 +179,7 @@
   letter-spacing: 0.4px;
   text-transform: uppercase;
   color: var(--muted);
+  font-family: "Montserrat", sans-serif;
   margin-bottom: 12px;
 }
 
@@ -181,10 +187,12 @@
   display: grid;
   gap: 10px;
   text-align: left;
+  font-family: "Montserrat", sans-serif;
 }
 
 .form .btn {
   width: 100%;
+  font-family: "Montserrat", sans-serif;
 }
 
 .label {
@@ -198,6 +206,7 @@
   color: var(--text);
   border-radius: 12px;
   padding: 12px 12px;
+  font-family: "Montserrat", sans-serif;
   outline: none;
   font-size: 16px;
 }
@@ -703,6 +712,8 @@ button.queueRow {
   color: var(--text);
   border-radius: 12px;
   padding: 12px 12px;
+  font-size: 15px;
+  font-family: "Montserrat", sans-serif;
   text-align: left;
   cursor: pointer;
 }
@@ -719,6 +730,7 @@ button.queueRow {
   place-items: center;
   z-index: 50;
   padding: 12px;
+  animation: pickerFadeIn 160ms ease both;
 }
 
 .pickerSheet {
@@ -733,6 +745,64 @@ button.queueRow {
   grid-template-rows: auto auto 1fr;
   max-height: min(78vh, 560px);
   overflow: hidden;
+  animation: pickerPopIn 180ms ease both;
+}
+
+@keyframes pickerFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes pickerPopIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (max-width: 520px) {
+  .pickerOverlay {
+    place-items: end center;
+    padding: 0;
+  }
+
+  .pickerSheet {
+    width: 100%;
+    border-radius: 18px 18px 0 0;
+    border-left: 0;
+    border-right: 0;
+    border-bottom: 0;
+    max-height: 82vh;
+    padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+    animation: pickerSlideUp 220ms cubic-bezier(0.2, 0.9, 0.2, 1) both;
+  }
+
+  .pickerSheet::before {
+    content: "";
+    display: block;
+    width: 54px;
+    height: 5px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.18);
+    margin: 2px auto 0;
+  }
+}
+
+@keyframes pickerSlideUp {
+  from {
+    transform: translateY(24px);
+  }
+  to {
+    transform: translateY(0);
+  }
 }
 
 .pickerHeader {
@@ -757,12 +827,14 @@ button.queueRow {
 .pickerItem {
   width: 100%;
   border: 0;
+  font-family: "Montserrat", sans-serif;
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   background: transparent;
   color: var(--text);
   text-align: left;
   padding: 12px 12px;
   cursor: pointer;
+  font-size: 15px;
 }
 
 .pickerItem:hover {
@@ -781,12 +853,13 @@ button.queueRow {
 }
 
 .chip {
-  border: 1px solid var(--border);
+  border: 1px solid rgba(116, 47, 105, 0.548);
   background: rgba(255, 255, 255, 0.06);
   color: var(--text);
   border-radius: 999px;
   padding: 8px 10px;
   font-size: 13px;
+  font-family: "Montserrat", sans-serif;
   cursor: pointer;
 }
 
@@ -956,6 +1029,7 @@ button.queueRow {
   padding: 9px 10px;
   text-align: left;
   color: var(--text);
+  font-family: "Montserrat", sans-serif;
   cursor: pointer;
   touch-action: manipulation;
 }
