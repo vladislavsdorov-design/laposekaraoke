@@ -1,9 +1,7 @@
 import { useDeferredValue, useEffect, useMemo, useRef, useState } from 'react'
 import {
   cancelEntry,
-  computeEtaMinutes,
   createQueueEntry,
-  formatEta,
   formatTrackLine,
   getSortedQueue,
   subscribeEntry,
@@ -59,9 +57,12 @@ export default function Home() {
   const [name, setName] = useState('')
   const [track, setTrack] = useState('')
   const [error, setError] = useState('')
+  const [fieldError, setFieldError] = useState(null)
   const [loading, setLoading] = useState(false)
   const [cancelLoading, setCancelLoading] = useState(false)
   const prevStatusRef = useRef(null)
+  const nameInputRef = useRef(null)
+  const trackInputRef = useRef(null)
   const [songs, setSongs] = useState([])
   const [songsLoading, setSongsLoading] = useState(false)
   const [songsError, setSongsError] = useState('')
@@ -101,12 +102,20 @@ export default function Home() {
   const [filtersBusy, setFiltersBusy] = useState(false)
   const songListRef = useRef(null)
   const loadMoreRef = useRef(null)
+  const [queueVisibleCount, setQueueVisibleCount] = useState(10)
+  const [queueLoadingMore, setQueueLoadingMore] = useState(false)
+  const queueListRef = useRef(null)
+  const queueMoreRef = useRef(null)
   const [artistPickerOpen, setArtistPickerOpen] = useState(false)
   const [stylePickerOpen, setStylePickerOpen] = useState(false)
+  const [yearPickerOpen, setYearPickerOpen] = useState(false)
   const [artistPickerQuery, setArtistPickerQuery] = useState('')
   const [stylePickerQuery, setStylePickerQuery] = useState('')
+  const [yearPickerQuery, setYearPickerQuery] = useState('')
   const [artistPickerVisible, setArtistPickerVisible] = useState(60)
   const [stylePickerVisible, setStylePickerVisible] = useState(60)
+  const [yearPickerVisible, setYearPickerVisible] = useState(80)
+  const [pickedFlash, setPickedFlash] = useState(false)
 
   useEffect(() => {
     getOrCreateLocalId(LOCAL_CLIENT_ID)
@@ -276,22 +285,12 @@ export default function Home() {
     return idx >= 0 ? idx + 1 : null
   }, [activeId, order])
   const aheadCount = useMemo(() => (position && position > 1 ? position - 1 : 0), [position])
-  const etaText = useMemo(() => {
-    const eta = computeEtaMinutes(position, 4)
-    return formatEta(eta)
-  }, [position])
   const songsById = useMemo(() => {
     const map = new Map()
     for (const item of songs) map.set(item.id, item)
     return map
   }, [songs])
   const selectedSong = useMemo(() => songsById.get(selectedSongId) || null, [songsById, selectedSongId])
-  const artistOptions = useMemo(() => artistOptionsAll, [artistOptionsAll])
-  const yearOptions = useMemo(() => {
-    if (!advancedOpen) return []
-    return yearOptionsAll
-  }, [yearOptionsAll, advancedOpen])
-  const styleOptions = useMemo(() => styleOptionsAll, [styleOptionsAll])
   const deferredQuery = useDeferredValue(trackQuery)
 
   useEffect(() => {
@@ -382,6 +381,32 @@ export default function Home() {
   )
   const hasMoreSongs = visibleCount < filteredSongs.length
 
+  const displayedQueue = useMemo(
+    () => order.slice(0, queueVisibleCount),
+    [order, queueVisibleCount],
+  )
+  const hasMoreQueue = queueVisibleCount < order.length
+
+  useEffect(() => {
+    if (!hasMoreQueue) return
+    if (!queueListRef.current || !queueMoreRef.current) return
+    const root = queueListRef.current
+    const target = queueMoreRef.current
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0]
+        if (entry?.isIntersecting) {
+          setQueueLoadingMore(true)
+          setQueueVisibleCount((prev) => Math.min(prev + 10, order.length))
+          setTimeout(() => setQueueLoadingMore(false), 180)
+        }
+      },
+      { root, threshold: 0.2 },
+    )
+    observer.observe(target)
+    return () => observer.disconnect()
+  }, [hasMoreQueue, order.length])
+
   useEffect(() => {
     if (!trackFinderOpen || !hasMoreSongs || !songListRef.current || !loadMoreRef.current) return
     const root = songListRef.current
@@ -419,6 +444,13 @@ export default function Home() {
     setStylePickerOpen(true)
   }
 
+  function openYearPicker() {
+    if (!advancedOpen) return
+    setYearPickerQuery('')
+    setYearPickerVisible(80)
+    setYearPickerOpen(true)
+  }
+
   function clearArtist() {
     setArtistFilter('')
     setVisibleCount(PAGE_SIZE)
@@ -426,6 +458,20 @@ export default function Home() {
 
   function clearStyle() {
     setStyleFilter('')
+    setVisibleCount(PAGE_SIZE)
+  }
+
+  function clearYear() {
+    setYearFilter('')
+    setVisibleCount(PAGE_SIZE)
+  }
+
+  function clearPickedSong() {
+    setSelectedSongId('')
+    setTrack('')
+    setTrackQueryInput('')
+    setTrackQuery('')
+    setPickedFlash(false)
     setVisibleCount(PAGE_SIZE)
   }
 
@@ -444,6 +490,22 @@ export default function Home() {
       : styleOptionsAll
     return base.slice(0, stylePickerVisible)
   }, [styleOptionsAll, stylePickerQuery, stylePickerVisible])
+
+  const yearSuggestions = useMemo(() => {
+    const needle = yearPickerQuery.trim().toLowerCase()
+    const base = needle
+      ? yearOptionsAll.filter((x) => x.toLowerCase().includes(needle))
+      : yearOptionsAll
+    return base.slice(0, yearPickerVisible)
+  }, [yearOptionsAll, yearPickerQuery, yearPickerVisible])
+
+  const activeFilters = useMemo(() => {
+    const items = []
+    if (artistFilter) items.push({ key: 'artist', label: 'Artysta', value: artistFilter })
+    if (yearFilter) items.push({ key: 'year', label: 'Rok', value: yearFilter })
+    if (styleFilter) items.push({ key: 'style', label: 'Styl', value: styleFilter })
+    return items
+  }, [artistFilter, yearFilter, styleFilter])
 
   const effectiveStatus = useMemo(() => {
     if (!activeEntry) return null
@@ -478,16 +540,21 @@ export default function Home() {
 
   async function submit() {
     setError('')
+    setFieldError(null)
     const cleanName = normalizeText(name, 28)
     const cleanTrack = normalizeText(track, 96)
     const songFromChoice = selectedSong || null
     const finalTrack = songFromChoice ? songLabel(songFromChoice) : cleanTrack
     if (!cleanName) {
       setError('Wpisz imie albo pseudonim.')
+      setFieldError('name')
+      nameInputRef.current?.focus?.()
       return
     }
     if (!finalTrack) {
       setError('Wpisz tytul utworu.')
+      setFieldError('track')
+      trackInputRef.current?.focus?.()
       return
     }
 
@@ -509,6 +576,7 @@ export default function Home() {
       setActiveId(newId)
       setName('')
       setTrack('')
+      setFieldError(null)
       setTrackQueryInput('')
       setTrackQuery('')
       setSelectedSongId('')
@@ -524,10 +592,6 @@ export default function Home() {
     setActiveId(null)
     setActiveEntry(null)
     setError('')
-  }
-
-  async function repeatSignup() {
-    resetToForm()
   }
 
   async function cancelMySignup() {
@@ -559,14 +623,26 @@ export default function Home() {
 
           {canShowForm ? (
             <div className="form">
+              {effectiveStatus === 'no_track' ? (
+                <div className="noticeBox noticeWarn">
+                  <div className="noticeTitle">Przepraszamy, ale niestety nie ma takiego utworu</div>
+                  <div className="noticeText">
+                    To zgloszenie zostalo oznaczone jako "Brak utworu". Wybierz inny utwor i wyslij nowe zgloszenie.
+                  </div>
+                </div>
+              ) : null}
               <label className="label" htmlFor="name">
                 Imie / pseudonim
               </label>
               <input
                 id="name"
-                className="input"
+                className={`input ${fieldError === 'name' ? 'inputGreen' : ''}`}
+                ref={nameInputRef}
                 value={name}
-                onChange={(e) => setName(e.target.value)}
+                onChange={(e) => {
+                  setName(e.target.value)
+                  if (fieldError === 'name') setFieldError(null)
+                }}
                 placeholder="Np. DJ Max"
                 autoComplete="nickname"
                 inputMode="text"
@@ -577,13 +653,15 @@ export default function Home() {
               </label>
               <input
                 id="track"
-                className="input"
+                className={`input ${fieldError === 'track' ? 'inputGreen' : ''}`}
+                ref={trackInputRef}
                 value={track}
                 onChange={(e) => {
                   const value = e.target.value
                   setTrack(value)
                   setTrackQueryInput(value)
                   setVisibleCount(PAGE_SIZE)
+                  if (fieldError === 'track') setFieldError(null)
                   if (selectedSongId && selectedSong && value !== songLabel(selectedSong)) {
                     setSelectedSongId('')
                   }
@@ -641,37 +719,67 @@ export default function Home() {
                           <button className="selectBtn" type="button" onClick={openArtistPicker}>
                             {artistFilter ? `Artysta: ${artistFilter}` : 'Artysta: wszyscy'}
                           </button>
-                          {artistFilter ? (
-                            <button className="btn btnSmall btnGhost" type="button" onClick={clearArtist}>
-                              Wyczyść artystę
-                            </button>
-                          ) : null}
-                          <select
-                            className="input"
-                            value={yearFilter}
-                            onChange={(e) => {
-                              setYearFilter(e.target.value)
-                              setVisibleCount(PAGE_SIZE)
-                            }}
-                          >
-                            <option value="">Wszystkie lata</option>
-                            {yearOptions.map((x) => (
-                              <option key={x} value={x}>
-                                {x}
-                              </option>
-                            ))}
-                          </select>
+                          <button className="selectBtn" type="button" onClick={openYearPicker}>
+                            {yearFilter ? `Rok: ${yearFilter}` : 'Rok: wszystkie'}
+                          </button>
                           <button className="selectBtn" type="button" onClick={openStylePicker}>
                             {styleFilter ? `Styl: ${styleFilter}` : 'Styl: wszystkie'}
                           </button>
-                          {styleFilter ? (
-                            <button className="btn btnSmall btnGhost" type="button" onClick={clearStyle}>
-                              Wyczyść styl
-                            </button>
-                          ) : null}
                         </>
                       ) : null}
                     </div>
+
+                    {advancedOpen ? (
+                      <div className="chipRow">
+                        {activeFilters.length ? (
+                          <>
+                            {activeFilters.map((f) => (
+                              <button
+                                key={f.key}
+                                type="button"
+                                className="chip"
+                                onClick={() => {
+                                  if (f.key === 'artist') clearArtist()
+                                  if (f.key === 'year') clearYear()
+                                  if (f.key === 'style') clearStyle()
+                                }}
+                              >
+                                {f.label}: {f.value} <span className="chipX">×</span>
+                              </button>
+                            ))}
+                            <button
+                              type="button"
+                              className="chip chipGhost"
+                              onClick={() => {
+                                clearArtist()
+                                clearYear()
+                                clearStyle()
+                              }}
+                            >
+                              Wyczyść wszystko
+                            </button>
+                          </>
+                        ) : (
+                          <div className="hint">Filtry: brak</div>
+                        )}
+                      </div>
+                    ) : null}
+
+                    {selectedSong ? (
+                      <div className={`pickedBox ${pickedFlash ? 'pickedBoxFlash' : ''}`}>
+                        <div className="pickedTitle">Wybrany utwor</div>
+                        <div className="pickedMain">
+                          {selectedSong.artist} - {selectedSong.title}
+                        </div>
+                        <div className="pickedMeta">
+                          {selectedSong.year || '—'} | {selectedSong.styles.join(', ') || '—'} |{' '}
+                          {selectedSong.language || '—'}
+                        </div>
+                        <button className="btn btnSmall btnGhost" type="button" onClick={clearPickedSong}>
+                          Zmien / wyczysc
+                        </button>
+                      </div>
+                    ) : null}
 
                     {songsError ? <div className="hint">{songsError}</div> : null}
                     {songsLoading ? (
@@ -716,6 +824,8 @@ export default function Home() {
                                 setTrack(label)
                                 setTrackQueryInput(label)
                                 setTrackQuery(label)
+                                setPickedFlash(true)
+                                setTimeout(() => setPickedFlash(false), 320)
                               }}
                             >
                               <div className="songMain">
@@ -867,6 +977,64 @@ export default function Home() {
                 </div>
               ) : null}
 
+              {yearPickerOpen ? (
+                <div className="pickerOverlay" role="dialog" aria-modal="true">
+                  <div className="pickerSheet">
+                    <div className="pickerHeader">
+                      <div className="pickerTitle">Wybierz rok</div>
+                      <button className="btn btnSmall btnGhost" type="button" onClick={() => setYearPickerOpen(false)}>
+                        Zamknij
+                      </button>
+                    </div>
+                    <input
+                      className="input"
+                      value={yearPickerQuery}
+                      onChange={(e) => {
+                        setYearPickerQuery(e.target.value)
+                        setYearPickerVisible(80)
+                      }}
+                      placeholder="Szukaj roku..."
+                      inputMode="numeric"
+                    />
+                    <div
+                      className="pickerList"
+                      onScroll={(e) => {
+                        const el = e.currentTarget
+                        if (el.scrollTop + el.clientHeight >= el.scrollHeight - 60) {
+                          setYearPickerVisible((v) => v + 80)
+                        }
+                      }}
+                    >
+                      <button
+                        type="button"
+                        className="pickerItem"
+                        onClick={() => {
+                          setYearFilter('')
+                          setVisibleCount(PAGE_SIZE)
+                          setYearPickerOpen(false)
+                        }}
+                      >
+                        Wszystkie lata
+                      </button>
+                      {yearSuggestions.map((x) => (
+                        <button
+                          key={x}
+                          type="button"
+                          className={`pickerItem ${x === yearFilter ? 'pickerItemActive' : ''}`}
+                          onClick={() => {
+                            setYearFilter(x)
+                            setVisibleCount(PAGE_SIZE)
+                            setYearPickerOpen(false)
+                          }}
+                        >
+                          {x}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              ) : null}
+
               {error ? <div className="error">{error}</div> : null}
 
               <button className="btn" type="button" onClick={submit} disabled={loading}>
@@ -888,9 +1056,6 @@ export default function Home() {
                   <div className="statusText">
                     Przed toba: <span className="mono">{aheadCount}</span>
                   </div>
-                  <div className="statusText">
-                    Szacowany czas: <span className="mono">{etaText}</span>
-                  </div>
                   <div className="hint">Kolejka aktualizuje sie automatycznie.</div>
                   <button
                     className="btn btnGhost"
@@ -911,16 +1076,6 @@ export default function Home() {
                     <span className="mono">{activeEntry?.name}</span> —{' '}
                     <span className="mono">{formatTrackLine(activeEntry)}</span>
                   </div>
-                </>
-              ) : null}
-
-              {effectiveStatus === 'no_track' ? (
-                <>
-                  <div className="statusTitle">Przepraszamy, ale niestety nie ma takiego utworu</div>
-                  <div className="statusText">Wybierz inny utwor i zapisz sie ponownie.</div>
-                  <button className="btn" type="button" onClick={repeatSignup}>
-                    Wybierz inny utwor
-                  </button>
                 </>
               ) : null}
 
@@ -958,11 +1113,11 @@ export default function Home() {
 
         <div className="card">
           <div className="cardTitle">Aktualna kolejka</div>
-          <div className="queueMini">
+          <div className="queueMini queueMiniScroll" ref={queueListRef}>
             {order.length === 0 ? (
               <div className="hint">Na razie pusto.</div>
             ) : (
-              order.slice(0, 10).map((x, idx) => (
+              displayedQueue.map((x, idx) => (
                 <div
                   key={x.id}
                   className={[
@@ -981,8 +1136,14 @@ export default function Home() {
                 </div>
               ))
             )}
+            <div ref={queueMoreRef} className="queueSentinel"></div>
           </div>
-          <div className="hint">Pokazuje pierwsze 10 osob. Aktywnych lacznie: {order.length}.</div>
+          <div className="hint">
+            Pokazuje: {Math.min(queueVisibleCount, order.length)} / {order.length}.
+            {hasMoreQueue || queueLoadingMore ? (
+              <> {queueLoadingMore ? 'Laduje wiecej...' : 'Przewin w dol, aby zaladowac wiecej.'}</>
+            ) : null}
+          </div>
         </div>
       </div>
     </div>

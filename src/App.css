@@ -124,6 +124,16 @@
   background: rgba(0, 0, 0, 0.5);
 }
 
+.inputGreen {
+  border-color: rgba(72, 255, 160, 0.75);
+  box-shadow: 0 0 0 2px rgba(72, 255, 160, 0.18);
+}
+
+.inputGreen:focus {
+  border-color: rgba(72, 255, 160, 0.9);
+  box-shadow: 0 0 0 3px rgba(72, 255, 160, 0.22);
+}
+
 .btn {
   border: 1px solid rgba(255, 255, 255, 0.18);
   background: rgba(255, 255, 255, 0.08);
@@ -188,6 +198,29 @@
   padding: 10px 12px;
   border-radius: 12px;
   color: var(--text);
+  font-size: 13px;
+}
+
+.noticeBox {
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.04);
+  padding: 10px 12px;
+  border-radius: 12px;
+  display: grid;
+  gap: 6px;
+}
+
+.noticeWarn {
+  border-color: rgba(72, 255, 160, 0.45);
+  background: rgba(72, 255, 160, 0.06);
+}
+
+.noticeTitle {
+  font-weight: 700;
+}
+
+.noticeText {
+  color: var(--muted);
   font-size: 13px;
 }
 
@@ -259,6 +292,18 @@
   gap: 10px;
 }
 
+.queueMiniScroll {
+  max-height: min(52vh, 520px);
+  overflow: auto;
+  padding-right: 2px;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+.queueSentinel {
+  height: 1px;
+}
+
 .queueRow {
   display: grid;
   grid-template-columns: 40px 1fr;
@@ -274,6 +319,152 @@
 button.queueRow {
   width: 100%;
   color: inherit;
+}
+
+.queueRowClickable {
+  cursor: pointer;
+}
+
+.queueHeader {
+  display: grid;
+  grid-template-columns: 40px 1fr 90px;
+  gap: 10px;
+  padding: 0 12px;
+  margin-bottom: 8px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.queueHeaderRow {
+  display: grid;
+  gap: 2px;
+}
+
+.queueRowActions {
+  display: grid;
+  gap: 8px;
+  justify-content: end;
+}
+
+.queueRowAdmin {
+  grid-template-columns: 40px 1fr 90px;
+}
+
+.copyBtn {
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text);
+  border-radius: 10px;
+  padding: 6px 8px;
+  font-size: 12px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.copyBtnActive {
+  border-color: rgba(72, 255, 160, 0.75);
+  box-shadow: 0 0 0 2px rgba(72, 255, 160, 0.14);
+  background: rgba(72, 255, 160, 0.08);
+}
+
+.copyBtnActive:active {
+  transform: translateY(1px);
+}
+
+.copyBtn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.copyBtn:active {
+  transform: translateY(1px);
+}
+
+.copyPanel {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--border);
+  display: grid;
+  gap: 8px;
+}
+
+.copyList {
+  display: grid;
+  gap: 10px;
+  max-height: min(34vh, 360px);
+  overflow: auto;
+  padding-right: 2px;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+.copySentinel {
+  height: 1px;
+}
+
+.toast {
+  position: fixed;
+  left: 14px;
+  bottom: 14px;
+  z-index: 80;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 160ms ease, transform 160ms ease;
+  border: 1px solid rgba(72, 255, 160, 0.45);
+  background: rgba(10, 10, 12, 0.92);
+  color: var(--text);
+  border-radius: 12px;
+  padding: 10px 12px;
+  box-shadow: var(--shadow);
+  max-width: min(92vw, 360px);
+  font-size: 13px;
+}
+
+.toastShow {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.copyRow {
+  display: grid;
+  grid-template-columns: 34px 1fr;
+  gap: 10px;
+  align-items: start;
+  padding: 10px 10px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: rgba(0, 0, 0, 0.22);
+}
+
+.copyNum {
+  font-family: var(--mono);
+  color: var(--muted);
+  font-size: 13px;
+  padding-top: 2px;
+}
+
+.copyBody {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+
+.copyLine {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+  align-items: center;
+  min-width: 0;
+}
+
+.copyText {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.copyMuted {
+  color: var(--muted);
+  font-size: 13px;
 }
 
 .queueRow:hover {
@@ -456,6 +647,8 @@ button.queueRow {
   padding: 12px;
   display: grid;
   gap: 10px;
+  height: min(78vh, 560px);
+  overflow: hidden;
 }
 
 .pickerHeader {
@@ -473,7 +666,7 @@ button.queueRow {
   border: 1px solid var(--border);
   border-radius: 14px;
   background: rgba(0, 0, 0, 0.35);
-  max-height: min(58vh, 420px);
+  flex: 1 1 auto;
   overflow: auto;
   -webkit-overflow-scrolling: touch;
 }
@@ -495,6 +688,71 @@ button.queueRow {
 
 .pickerItemActive {
   background: rgba(72, 255, 160, 0.08);
+}
+
+.chipRow {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.chip {
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text);
+  border-radius: 999px;
+  padding: 8px 10px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.chipGhost {
+  background: transparent;
+}
+
+.chipX {
+  opacity: 0.7;
+  margin-left: 6px;
+}
+
+.pickedBox {
+  border: 1px solid rgba(72, 255, 160, 0.45);
+  background: rgba(72, 255, 160, 0.06);
+  border-radius: 14px;
+  padding: 10px 10px;
+  display: grid;
+  gap: 6px;
+}
+
+.pickedBoxFlash {
+  animation: pickedFlash 320ms ease-in-out;
+}
+
+@keyframes pickedFlash {
+  0% {
+    box-shadow: 0 0 0 0 rgba(72, 255, 160, 0.35);
+  }
+  100% {
+    box-shadow: 0 0 0 10px rgba(72, 255, 160, 0);
+  }
+}
+
+.pickedTitle {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: rgba(72, 255, 160, 0.95);
+}
+
+.pickedMain {
+  font-weight: 700;
+}
+
+.pickedMeta {
+  color: var(--muted);
+  font-size: 12px;
+  overflow-wrap: anywhere;
 }
 
 @media (min-width: 760px) {

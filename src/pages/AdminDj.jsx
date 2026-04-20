@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import AuthGate from '../components/AuthGate'
 import {
@@ -35,6 +35,12 @@ function AdminInner() {
   const [mode, setMode] = useState('active')
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
+  const [copied, setCopied] = useState('')
+  const [lastCopied, setLastCopied] = useState(null)
+  const [copyVisibleCount, setCopyVisibleCount] = useState(5)
+  const [copyLoadingMore, setCopyLoadingMore] = useState(false)
+  const copyListRef = useRef(null)
+  const copyMoreRef = useRef(null)
 
   useEffect(() => subscribeQueue(setQueueMap), [])
   useEffect(() => subscribeNowId(setNowId), [])
@@ -72,6 +78,36 @@ function AdminInner() {
       setError('Nie udalo sie zaktualizowac statusu. Sprawdz internet.')
     } finally {
       setBusy(false)
+    }
+  }
+
+  async function copyText(text, meta) {
+    if (!text) return
+    const label = meta?.field === 'name' ? 'Skopiowano: imie' : meta?.field === 'track' ? 'Skopiowano: utwor' : 'Skopiowano'
+    try {
+      await navigator.clipboard.writeText(text)
+      setCopied(label)
+      setLastCopied(meta || null)
+      setTimeout(() => setCopied(''), 900)
+    } catch {
+      try {
+        const el = document.createElement('textarea')
+        el.value = text
+        el.setAttribute('readonly', 'true')
+        el.style.position = 'fixed'
+        el.style.left = '-9999px'
+        document.body.appendChild(el)
+        el.select()
+        document.execCommand('copy')
+        document.body.removeChild(el)
+        setCopied(label)
+        setLastCopied(meta || null)
+        setTimeout(() => setCopied(''), 900)
+      } catch {
+        setCopied('Nie udalo sie skopiowac')
+        setLastCopied(null)
+        setTimeout(() => setCopied(''), 1200)
+      }
     }
   }
 
@@ -157,6 +193,31 @@ function AdminInner() {
       setBusy(false)
     }
   }
+
+  const copyDisplayed = useMemo(
+    () => activeOrder.slice(0, Math.min(copyVisibleCount, activeOrder.length)),
+    [activeOrder, copyVisibleCount],
+  )
+  const copyHasMore = copyVisibleCount < activeOrder.length
+
+  useEffect(() => {
+    if (!copyHasMore || !copyListRef.current || !copyMoreRef.current) return
+    const root = copyListRef.current
+    const target = copyMoreRef.current
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0]
+        if (entry?.isIntersecting) {
+          setCopyLoadingMore(true)
+          setCopyVisibleCount((prev) => Math.min(prev + 5, activeOrder.length))
+          setTimeout(() => setCopyLoadingMore(false), 180)
+        }
+      },
+      { root, threshold: 0.2 },
+    )
+    observer.observe(target)
+    return () => observer.disconnect()
+  }, [copyHasMore, activeOrder.length])
 
   return (
     <div className="grid gridAdmin">
@@ -276,6 +337,58 @@ function AdminInner() {
 
         {error ? <div className="error">{error}</div> : null}
 
+        <div className="copyPanel">
+          <div className="cardTitle">Kopiowanie</div>
+          <div className="hint">Kliknij, aby skopiowac. Ostatnio skopiowane podswietla sie na zielono.</div>
+          <div className="copyList" ref={copyListRef}>
+            {activeOrder.length === 0 ? (
+              <div className="hint">Brak aktywnych.</div>
+            ) : (
+              copyDisplayed.map((x, idx) => (
+                <div key={x.id} className="copyRow">
+                  <div className="copyNum">{idx + 1}</div>
+                  <div className="copyBody">
+                    <div className="copyLine">
+                      <div className="copyText">{x.name || '—'}</div>
+                      <button
+                        className={[
+                          'copyBtn',
+                          lastCopied?.id === x.id && lastCopied?.field === 'name' ? 'copyBtnActive' : '',
+                        ]
+                          .filter(Boolean)
+                          .join(' ')}
+                        type="button"
+                        onClick={() => copyText(x.name || '', { id: x.id, field: 'name' })}
+                      >
+                        Imie
+                      </button>
+                    </div>
+                    <div className="copyLine">
+                      <div className="copyText copyMuted">{formatTrackLine(x)}</div>
+                      <button
+                        className={[
+                          'copyBtn',
+                          lastCopied?.id === x.id && lastCopied?.field === 'track' ? 'copyBtnActive' : '',
+                        ]
+                          .filter(Boolean)
+                          .join(' ')}
+                        type="button"
+                        onClick={() => copyText(formatTrackLine(x), { id: x.id, field: 'track' })}
+                      >
+                        Utwor
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
+            <div ref={copyMoreRef} className="copySentinel"></div>
+          </div>
+          {copyHasMore || copyLoadingMore ? (
+            <div className="hint">{copyLoadingMore ? 'Laduje wiecej...' : 'Przewin w dol, aby zaladowac wiecej.'}</div>
+          ) : null}
+        </div>
+
         <div className="announceHelper">
           <div className="cardTitle">Panel Zapowiadajacego</div>
           <div className="statusText">{announcerLineNow}</div>
@@ -289,6 +402,8 @@ function AdminInner() {
           <div className="hint">Haslo zapowiedzi: posJSdwa</div>
         </div>
       </div>
+
+      <div className={['toast', copied ? 'toastShow' : ''].filter(Boolean).join(' ')}>{copied}</div>
     </div>
   )
 }
