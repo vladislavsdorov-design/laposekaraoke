@@ -37,6 +37,12 @@ body {
     var(--bg);
 }
 
+@media (max-width: 520px) {
+  body {
+    background: transparent;
+  }
+}
+
 #root {
   min-height: 100svh;
 }
