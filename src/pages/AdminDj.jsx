@@ -4,6 +4,7 @@ import AuthGate from '../components/AuthGate'
 import {
   clearQueue,
   formatStatus,
+  formatTrackLine,
   getNextAfterNow,
   getQueueStats,
   getRecentHistory,
@@ -54,11 +55,11 @@ function AdminInner() {
   const nextAfterCurrent = useMemo(() => getNextAfterNow(queueMap, nowId), [queueMap, nowId])
   const announcerLineNow = useMemo(() => {
     if (!selected) return 'Brak wybranej osoby.'
-    return `Teraz zapraszamy: ${selected.name || 'Gosc'} - ${selected.track || 'utwor'}.`
+    return `Teraz zapraszamy: ${selected.name || 'Gosc'} - ${formatTrackLine(selected)}.`
   }, [selected])
   const announcerLineNext = useMemo(() => {
     if (!nextAfterCurrent) return 'Brak kolejnej osoby.'
-    return `Nastepny w kolejnosci: ${nextAfterCurrent.name || 'Gosc'} - ${nextAfterCurrent.track || 'utwor'}.`
+    return `Nastepny w kolejnosci: ${nextAfterCurrent.name || 'Gosc'} - ${formatTrackLine(nextAfterCurrent)}.`
   }, [nextAfterCurrent])
 
   async function selectEntry(id) {
@@ -216,7 +217,7 @@ function AdminInner() {
                 <div className="queueNum">{idx + 1}</div>
                 <div className="queueMain">
                   <div className="queueName">{x.name || '—'}</div>
-                  <div className="queueTrack">{x.track || '—'}</div>
+                  <div className="queueTrack">{formatTrackLine(x)}</div>
                   <div className="queueMeta">{formatStatus(x.status)}</div>
                 </div>
               </button>
@@ -235,7 +236,7 @@ function AdminInner() {
               Imie: <span className="mono">{selected.name}</span>
             </div>
             <div className="statusText">
-              Utwor: <span className="mono">{selected.track}</span>
+              Utwor: <span className="mono">{formatTrackLine(selected)}</span>
             </div>
 
             <div className="actions">

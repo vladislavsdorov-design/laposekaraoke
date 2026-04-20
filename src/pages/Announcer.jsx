@@ -1,6 +1,13 @@
 import { useEffect, useMemo, useState } from 'react'
 import AuthGate from '../components/AuthGate'
-import { formatStatus, getNextAfterNow, getSortedQueue, subscribeNowId, subscribeQueue } from '../lib/queue'
+import {
+  formatStatus,
+  formatTrackLine,
+  getNextAfterNow,
+  getSortedQueue,
+  subscribeNowId,
+  subscribeQueue,
+} from '../lib/queue'
 
 export default function Announcer() {
   return (
@@ -57,7 +64,7 @@ function AnnouncerInner() {
             <div className="nowTitle">TERAZ</div>
             <div className="nowLine">
               <span className="mono">{nowEntry.name}</span> —{' '}
-              <span className="mono">{nowEntry.track}</span>
+              <span className="mono">{formatTrackLine(nowEntry)}</span>
             </div>
           </div>
         ) : (
@@ -69,7 +76,7 @@ function AnnouncerInner() {
           {nextEntry ? (
             <div className="statusText">
               <span className="mono">{nextEntry.name}</span> —{' '}
-              <span className="mono">{nextEntry.track}</span>
+              <span className="mono">{formatTrackLine(nextEntry)}</span>
             </div>
           ) : (
             <div className="hint">Brak kolejnej osoby.</div>
@@ -96,7 +103,7 @@ function AnnouncerInner() {
                 <div className="queueNum">{idx + 1}</div>
                 <div className="queueMain">
                   <div className="queueName">{x.name || '—'}</div>
-                  <div className="queueTrack">{x.track || '—'}</div>
+                  <div className="queueTrack">{formatTrackLine(x)}</div>
                   <div className="queueMeta">{formatStatus(x.status)}</div>
                 </div>
               </div>

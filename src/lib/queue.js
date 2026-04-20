@@ -23,13 +23,29 @@ function withUpdatedServerTime(patch) {
   }
 }
 
-export async function createQueueEntry({ clientId, name, track }) {
+export async function createQueueEntry({
+  clientId,
+  name,
+  track,
+  trackId = null,
+  trackTitle = null,
+  trackArtist = null,
+  trackYear = null,
+  trackStyle = null,
+  trackLanguage = null,
+}) {
   const queueRef = ref(db, 'queue')
   const entryRef = push(queueRef)
   const payload = {
     clientId,
     name,
     track,
+    trackId,
+    trackTitle,
+    trackArtist,
+    trackYear,
+    trackStyle,
+    trackLanguage,
     status: 'pending',
     createdAt: Date.now(),
     updatedAt: Date.now(),
@@ -203,6 +219,17 @@ export function getNextAfterNow(queueMap, nowId) {
 
 export function getTopPending(queueMap, limit = 5) {
   return getSortedQueue(queueMap, ['pending']).slice(0, limit)
+}
+
+export function formatTrackLine(entry) {
+  if (!entry) return '—'
+  if (entry.trackArtist && entry.trackTitle) {
+    const meta = [entry.trackYear, entry.trackStyle].filter(Boolean).join(', ')
+    return meta
+      ? `${entry.trackArtist} - ${entry.trackTitle} (${meta})`
+      : `${entry.trackArtist} - ${entry.trackTitle}`
+  }
+  return entry.track || '—'
 }
 
 export async function clearQueue() {

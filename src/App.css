@@ -19,6 +19,16 @@
   box-shadow: var(--shadow);
 }
 
+@media (max-width: 520px) {
+  .page {
+    padding: 14px 12px 24px;
+  }
+  .topbar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
 .topbarRight {
   display: flex;
   gap: 12px;
@@ -73,6 +83,7 @@
   background: var(--panel);
   padding: 16px;
   box-shadow: var(--shadow);
+  min-width: 0;
 }
 
 .cardTitle {
@@ -89,6 +100,10 @@
   text-align: left;
 }
 
+.form .btn {
+  width: 100%;
+}
+
 .label {
   font-size: 13px;
   color: var(--muted);
@@ -101,6 +116,7 @@
   border-radius: 12px;
   padding: 12px 12px;
   outline: none;
+  font-size: 16px;
 }
 
 .input:focus {
@@ -363,4 +379,282 @@ button.queueRow {
 .linkInline {
   margin-left: 6px;
   color: var(--text);
+}
+
+.trackFinder {
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.02);
+  display: grid;
+  gap: 10px;
+  width: 100%;
+  min-width: 0;
+}
+
+.trackFinderHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.trackFinderHeaderBtns {
+  display: flex;
+  gap: 8px;
+}
+
+.trackFinderTitle {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--muted);
+}
+
+.trackFilters {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+
+.trackFilters > * {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.selectBtn {
+  width: 100%;
+  border: 1px solid var(--border);
+  background: rgba(0, 0, 0, 0.35);
+  color: var(--text);
+  border-radius: 12px;
+  padding: 12px 12px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.selectBtn:hover {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.pickerOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: grid;
+  place-items: end center;
+  z-index: 50;
+  padding: 12px;
+}
+
+.pickerSheet {
+  width: min(720px, 100%);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: rgba(10, 10, 12, 0.98);
+  box-shadow: var(--shadow);
+  padding: 12px;
+  display: grid;
+  gap: 10px;
+}
+
+.pickerHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.pickerTitle {
+  font-weight: 700;
+}
+
+.pickerList {
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: rgba(0, 0, 0, 0.35);
+  max-height: min(58vh, 420px);
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.pickerItem {
+  width: 100%;
+  border: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  background: transparent;
+  color: var(--text);
+  text-align: left;
+  padding: 12px 12px;
+  cursor: pointer;
+}
+
+.pickerItem:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.pickerItemActive {
+  background: rgba(72, 255, 160, 0.08);
+}
+
+@media (min-width: 760px) {
+  .trackFilters {
+    grid-template-columns: 1.2fr 1fr 0.8fr 1fr;
+  }
+}
+
+@media (max-width: 520px) {
+  .trackFinderHeader {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .trackFinderHeaderBtns {
+    width: 100%;
+    flex-wrap: wrap;
+    justify-content: stretch;
+  }
+  .trackFinderHeaderBtns .btn {
+    flex: 1 1 calc(50% - 8px);
+  }
+  .trackFilters {
+    grid-template-columns: 1fr;
+  }
+}
+
+.songList {
+  display: grid;
+  gap: 6px;
+  max-height: 260px;
+  overflow: auto;
+  padding-right: 2px;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+.songListWrap {
+  position: relative;
+  display: grid;
+  gap: 8px;
+}
+
+.songListSentinel {
+  height: 1px;
+}
+
+.skeletonBlock {
+  display: grid;
+  gap: 8px;
+}
+
+.skeletonList {
+  display: grid;
+  gap: 6px;
+}
+
+.skeletonRow {
+  height: 44px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.04) 0%,
+    rgba(255, 255, 255, 0.10) 35%,
+    rgba(255, 255, 255, 0.04) 70%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 900ms ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 120% 0;
+  }
+  100% {
+    background-position: -120% 0;
+  }
+}
+
+.backToTopBtn {
+  position: absolute;
+  right: 8px;
+  bottom: 56px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: rgba(0, 0, 0, 0.72);
+  color: var(--text);
+  cursor: pointer;
+  box-shadow: var(--shadow);
+}
+
+@media (max-width: 520px) {
+  .trackFinder {
+    padding: 10px 10px;
+  }
+  .songList {
+    max-height: 40vh;
+  }
+  .backToTopBtn {
+    bottom: 52px;
+    right: 6px;
+  }
+  .songItem {
+    padding: 12px 12px;
+  }
+  .songMain {
+    font-size: 15px;
+  }
+}
+
+.songItem {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.25);
+  padding: 9px 10px;
+  text-align: left;
+  color: var(--text);
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.songItemAnimate {
+  animation: songFadeUp 220ms ease both;
+}
+
+@keyframes songFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.songItem:hover {
+  background: rgba(0, 0, 0, 0.35);
+}
+
+.songItemActive {
+  border-color: rgba(72, 255, 160, 0.6);
+  box-shadow: 0 0 0 1px rgba(72, 255, 160, 0.25);
+}
+
+.songMain {
+  font-size: 14px;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.songMeta {
+  margin-top: 2px;
+  font-size: 12px;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  white-space: normal;
 }
