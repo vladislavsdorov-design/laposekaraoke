@@ -1073,3 +1073,543 @@ button.queueRow {
   word-break: break-word;
   white-space: normal;
 }
+/* ============================================
+   STYLE DLA DRAG & DROP W ADMIN PANELU
+   ============================================ */
+
+/* ===== PRZYCISKI PRZESUWANIA ===== */
+.movePanel {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+  padding: 12px 14px;
+  margin: 10px 0 14px 0;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.moveLabel {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--muted);
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.moveButtons {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.moveButtons .btn {
+  min-width: 44px;
+  height: 44px;
+  font-size: 1.3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  transition: all 0.2s ease;
+  font-family: "Montserrat", sans-serif;
+}
+
+.moveButtons .btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.14);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.moveButtons .btn:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+.moveButtons .btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.moveToPosition {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 2px;
+}
+
+.moveLabelSmall {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.positionSelect {
+  padding: 8px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.35);
+  color: var(--text);
+  font-size: 14px;
+  font-family: "Montserrat", sans-serif;
+  min-width: 140px;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 36px;
+}
+
+.positionSelect:hover:not(:disabled) {
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.positionSelect:focus {
+  outline: none;
+  border-color: rgba(72, 255, 160, 0.4);
+  box-shadow: 0 0 0 3px rgba(72, 255, 160, 0.08);
+}
+
+.positionSelect:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.positionSelect option {
+  background: #1a1a1e;
+  color: #fff;
+}
+
+/* ===== DRAG & DROP - WIERSZE ===== */
+.queueRow {
+  display: grid;
+  grid-template-columns: 40px 1fr auto;
+  gap: 10px;
+  align-items: center;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: rgba(0, 0, 0, 0.22);
+  text-align: left;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  user-select: none;
+  touch-action: none;
+}
+
+/* Stan dla elementów, które można przeciągać */
+.queueRow.draggable {
+  cursor: grab;
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.queueRow.draggable:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateX(4px);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
+}
+
+.queueRow.draggable:active {
+  cursor: grabbing;
+  transform: scale(0.98);
+}
+
+/* Stan "Teraz" - nie można przeciągać */
+.queueRowNow {
+  border-color: rgba(72, 255, 160, 0.5) !important;
+  box-shadow: 0 0 0 1px rgba(72, 255, 160, 0.2);
+  background: rgba(72, 255, 160, 0.06);
+  cursor: default !important;
+}
+
+.queueRowNow:hover {
+  transform: none !important;
+  background: rgba(72, 255, 160, 0.08) !important;
+}
+
+/* Stan wybrany */
+.queueRowSelected {
+  border-color: rgba(255, 255, 255, 0.3) !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.06);
+}
+
+/* ===== DRAG & DROP - PRZECIĄGANIE ===== */
+.queueRow.dragging {
+  opacity: 0.3 !important;
+  transform: scale(0.95) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4) !important;
+  border-color: rgba(72, 255, 160, 0.4) !important;
+  background: rgba(72, 255, 160, 0.05) !important;
+  z-index: 999;
+  cursor: grabbing;
+}
+
+/* Efekt gdy element jest nad celem (drop target) */
+.queueRow.dragOver {
+  border-top: 3px solid rgba(72, 255, 160, 0.8);
+  background: rgba(72, 255, 160, 0.06);
+  transform: translateX(0);
+}
+
+.queueRow.dragOver::before {
+  content: "";
+  position: absolute;
+  top: -3px;
+  left: 10%;
+  right: 10%;
+  height: 3px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(72, 255, 160, 0.8),
+    transparent
+  );
+  border-radius: 2px;
+  animation: dragLinePulse 1s ease-in-out infinite;
+}
+
+@keyframes dragLinePulse {
+  0%,
+  100% {
+    opacity: 0.6;
+    transform: scaleX(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scaleX(1.1);
+  }
+}
+
+/* ===== CHWYT (DRAG HANDLE) ===== */
+.dragHandle {
+  opacity: 0.2;
+  font-size: 1.2rem;
+  padding: 4px 8px;
+  color: var(--muted);
+  cursor: grab;
+  transition: all 0.2s ease;
+  user-select: none;
+  border-radius: 8px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+}
+
+.queueRow.draggable:hover .dragHandle {
+  opacity: 0.8;
+  background: rgba(255, 255, 255, 0.06);
+  transform: scale(1.1);
+}
+
+.queueRow.draggable:active .dragHandle {
+  opacity: 1;
+  background: rgba(255, 255, 255, 0.1);
+  cursor: grabbing;
+}
+
+/* ===== BADGE "TERAZ" ===== */
+.nowBadge {
+  background: linear-gradient(
+    135deg,
+    rgba(72, 255, 160, 0.25),
+    rgba(72, 255, 160, 0.1)
+  );
+  color: rgba(72, 255, 160, 0.95);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border: 1px solid rgba(72, 255, 160, 0.3);
+  white-space: nowrap;
+  animation: pulseBadge 2s ease-in-out infinite;
+  box-shadow: 0 0 20px rgba(72, 255, 160, 0.1);
+}
+
+@keyframes pulseBadge {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(0.95);
+  }
+}
+
+/* ===== NUMER W KOLEJCE ===== */
+.queueNum {
+  font-family: var(--mono, "Courier New", monospace);
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 600;
+  text-align: center;
+  min-width: 24px;
+}
+
+.queueRowNow .queueNum {
+  color: rgba(72, 255, 160, 0.8);
+}
+
+/* ===== GŁÓWNA ZAWARTOŚĆ ===== */
+.queueMain {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.queueName {
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.queueRowNow .queueName {
+  color: rgba(72, 255, 160, 0.9);
+}
+
+.queueTrack {
+  color: var(--muted);
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.queueMeta {
+  color: var(--muted);
+  font-size: 11px;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+
+/* ===== STYLE DLA LISTY Z DRAG & DROP ===== */
+.queue {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 500px;
+  overflow-y: auto;
+  padding: 4px;
+  scroll-behavior: smooth;
+}
+
+.queue::-webkit-scrollbar {
+  width: 4px;
+}
+
+.queue::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 2px;
+}
+
+.queue::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 2px;
+}
+
+.queue::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* ===== KOPIOWANIE ===== */
+.copyBtn {
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text);
+  border-radius: 10px;
+  padding: 6px 10px;
+  font-size: 11px;
+  font-family: "Montserrat", sans-serif;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.copyBtn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  transform: translateY(-1px);
+}
+
+.copyBtn:active {
+  transform: scale(0.95);
+}
+
+.copyBtnActive {
+  border-color: rgba(72, 255, 160, 0.5);
+  box-shadow: 0 0 0 2px rgba(72, 255, 160, 0.12);
+  background: rgba(72, 255, 160, 0.08);
+  color: rgba(72, 255, 160, 0.9);
+}
+
+/* ===== TOAST ===== */
+.toast {
+  position: fixed;
+  left: 14px;
+  bottom: 14px;
+  z-index: 80;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 160ms ease, transform 160ms ease;
+  border: 1px solid rgba(72, 255, 160, 0.3);
+  background: rgba(10, 10, 12, 0.95);
+  color: var(--text);
+  border-radius: 12px;
+  padding: 10px 16px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+  max-width: min(92vw, 360px);
+  font-size: 13px;
+  font-family: "Montserrat", sans-serif;
+  backdrop-filter: blur(20px);
+}
+
+.toastShow {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ===== RESPONSYWNOŚĆ ===== */
+@media (max-width: 768px) {
+  .queueRow {
+    padding: 10px 12px;
+    gap: 8px;
+    grid-template-columns: 32px 1fr auto;
+  }
+
+  .queueName {
+    font-size: 0.85rem;
+  }
+
+  .queueTrack {
+    font-size: 12px;
+  }
+
+  .queueNum {
+    font-size: 12px;
+    min-width: 18px;
+  }
+
+  .dragHandle {
+    font-size: 1rem;
+    padding: 2px 4px;
+    min-width: 20px;
+  }
+
+  .nowBadge {
+    font-size: 0.6rem;
+    padding: 2px 8px;
+  }
+
+  .moveButtons .btn {
+    min-width: 38px;
+    height: 38px;
+    font-size: 1.1rem;
+  }
+
+  .positionSelect {
+    min-width: 100px;
+    font-size: 13px;
+    padding: 6px 10px;
+    padding-right: 32px;
+  }
+
+  .moveToPosition {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .movePanel {
+    padding: 10px 12px;
+  }
+}
+
+@media (max-width: 520px) {
+  .queue {
+    max-height: 400px;
+  }
+
+  .queueRow {
+    padding: 8px 10px;
+    gap: 6px;
+    grid-template-columns: 28px 1fr auto;
+    border-radius: 12px;
+  }
+
+  .queueRow.draggable:hover {
+    transform: none;
+  }
+
+  .queueMain {
+    gap: 1px;
+  }
+
+  .queueTrack {
+    font-size: 11px;
+    white-space: normal;
+    word-break: break-word;
+  }
+
+  .dragHandle {
+    font-size: 0.9rem;
+    padding: 2px;
+  }
+
+  .nowBadge {
+    font-size: 0.5rem;
+    padding: 2px 6px;
+  }
+
+  .moveButtons .btn {
+    min-width: 34px;
+    height: 34px;
+    font-size: 1rem;
+  }
+}
+
+/* ===== ANIMACJA WEJŚCIA ===== */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.queueRow {
+  animation: fadeInUp 0.2s ease;
+}
+
+/* ===== DODATKOWE ULEPSZENIA ===== */
+.queueRow.draggable {
+  will-change: transform;
+}
+
+/* Wskazówka dla użytkownika */
+.dragHint {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px dashed rgba(255, 255, 255, 0.08);
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+
+.dragHintIcon {
+  font-size: 16px;
+  opacity: 0.6;
+}
